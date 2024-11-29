@@ -1,0 +1,26 @@
+{
+  "name": "projeto_api_taskify",
+  "version": "1.0.0",
+  "description": "GRUPO DE ESTUDO SISTEMAS DISTRIBUIDOS.",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "serve": "firebase serve",
+    "deploy": "firebase deploy",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@firebasegen/default-connector": "file:dataconnect-generated/js/default-connector",
+    "body-parser": "^1.20.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "firebase": "^10.14.1",
+    "firebase-admin": "^13.0.1",
+    "punycode": "^2.3.1",
+    "uid": "^2.0.2",
+    "validator": "^13.12.0"
+  }
+}
