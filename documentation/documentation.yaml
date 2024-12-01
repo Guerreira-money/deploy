@@ -1,0 +1,203 @@
+openapi: 3.0.1
+info:
+  title: API de Gerenciamento de Tarefas
+  description: API para gerenciamento de usuários e tarefas, utilizando Firebase para autenticação.
+  version: "1.0.0"
+servers:
+  - url: 'http://localhost:3000/api'
+paths:
+  /users/signup:
+    post:
+      summary: Cadastro de usuário
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: Email do usuário
+                password:
+                  type: string
+                  description: Senha do usuário
+                nome:
+                  type: string
+                  description: Nome do usuário
+              required:
+                - email
+                - password
+                - nome
+      responses:
+        '201':
+          description: Usuário cadastrado com sucesso
+        '400':
+          description: Erro na validação dos dados fornecidos
+
+  /users/login:
+    post:
+      summary: Login de usuário
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: Email do usuário
+                password:
+                  type: string
+                  description: Senha do usuário
+              required:
+                - email
+                - password
+      responses:
+        '200':
+          description: Login bem-sucedido
+        '400':
+          description: Credenciais inválidas
+
+  /users/forgot-password:
+    post:
+      summary: Solicitar link de redefinição de senha
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: Email para redefinir a senha
+      responses:
+        '200':
+          description: Link de redefinição enviado
+        '400':
+          description: Erro ao enviar o link
+
+  /users/change-password:
+    post:
+      summary: Alterar a senha do usuário logado
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: Email do usuário
+      responses:
+        '200':
+          description: Senha alterada com sucesso
+        '400':
+          description: Erro ao alterar a senha
+
+  /users/tasks/create:
+    post:
+      summary: Criar tarefa
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Nome da tarefa
+                description:
+                  type: string
+                  description: Descrição da tarefa
+                date_initial:
+                  type: string
+                  format: date
+                  description: Data inicial da tarefa
+                date_finish:
+                  type: string
+                  format: date
+                  description: Data final da tarefa
+                time:
+                  type: string
+                  description: Horário da tarefa
+                task_category:
+                  type: string
+                  description: Categoria da tarefa
+              required:
+                - name
+                - description
+      responses:
+        '201':
+          description: Tarefa criada com sucesso
+        '400':
+          description: Erro na validação dos dados
+
+  /users/tasks/{taskId}/update:
+    put:
+      summary: Atualizar tarefa existente
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: taskId
+          required: true
+          schema:
+            type: string
+          description: ID da tarefa a ser atualizada
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date_initial:
+                  type: string
+                  format: date
+                  description: Data inicial da tarefa
+                date_finish:
+                  type: string
+                  format: date
+                  description: Data final da tarefa
+                time:
+                  type: string
+                  description: Horário da tarefa
+      responses:
+        '200':
+          description: Tarefa atualizada com sucesso
+        '400':
+          description: Erro ao atualizar a tarefa
+
+  /users/tasks/{taskId}/delete:
+    delete:
+      summary: Deletar tarefa
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: taskId
+          required: true
+          schema:
+            type: string
+          description: ID da tarefa a ser deletada
+      responses:
+        '200':
+          description: Tarefa deletada com sucesso
+        '500':
+          description: Erro ao deletar a tarefa
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

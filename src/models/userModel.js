@@ -1,6 +1,4 @@
 import validator from 'validator';
-//import { collection, getDocs, query, where } from 'firebase/firestore';
-//import { auth, db } from '../config/firebaseconfig.js';
 
 
 

@@ -2,7 +2,8 @@ import {
   signupUser, 
   loginUser, 
     deleteUserAccount, 
-  sendPasswordResetLink 
+  sendPasswordResetLink,
+  changeAccountDetailsService
 } from '../services/auth_user_service.js';
 import { validateUserData } from "../models/userModel.js";
 
@@ -58,16 +59,34 @@ export const deleteAccount = async (req, res) => {
 };
 
 
-// Controller para atualizar senha do usuário logado
+// Controlador para alterar email e/ou senha do usuário
 export const changePassword = async (req, res) => {
   try {
-    const { email } = req.body;
-    await resetPassword(email);
-    res.status(200).json({ message: 'E-mail de redefinição de senha enviado' });
+    const { newEmail, newPassword } = req.body;
+    const userId = req.auth?.uid; // Acessando o uid a partir de req.auth, como definido no middleware
+
+    if (!userId) {
+      return res.status(400).json({ error: 'Usuário não autenticado ou token inválido' });
+    }
+
+    // Valida se ao menos um dos campos foi enviado
+    if (!newEmail && !newPassword) {
+      return res.status(400).json({ error: 'Envie o novo email, a nova senha, ou ambos.' });
+    }
+
+    // Chama o serviço para alterar os dados da conta
+    const updates = await changeAccountDetailsService(userId, newEmail, newPassword);
+
+    // Retorna a resposta
+    res.status(200).json({
+      message: 'Dados atualizados com sucesso.',
+      updatedFields: Object.keys(updates), // Retorna os campos atualizados (email, password)
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
+
 
 // Controller para enviar link de redefinição de senha
 export const resetPasswordController = async (req, res) => {

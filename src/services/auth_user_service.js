@@ -47,6 +47,10 @@ export const loginUser = async (email, password) => {
   return { message: 'Login bem-sucedido', uid: user.uid, email: user.email };
 };
 
+
+
+
+
 // Serviço para deletar a conta do usuário
 export const deleteUserAccount = async (uid) => {
   try {
@@ -82,6 +86,37 @@ export const deleteUserAccount = async (uid) => {
     throw new Error('Erro ao deletar a conta do usuário: ' + error.message);
   }
 };
+
+
+// Serviço para alterar o email e a senha do usuário
+export const changeAccountDetailsService = async (userId, newEmail, newPassword) => { 
+  try {
+    const updates = {}; // Objeto para armazenar os campos alterados
+    const db = admin.firestore();
+    // Se o novo email for fornecido, atualiza o email no Firebase Authentication
+    if (newEmail) {
+      await admin.auth().updateUser(userId, { email: newEmail });
+      updates.email = newEmail;
+
+      //Atualiza o email no banco de dados.
+
+      await db.collection('users').doc(userId).update({email: newEmail});
+    }
+
+    // Se a nova senha for fornecida, atualiza a senha no Firebase Authentication
+    if (newPassword) {
+      await admin.auth().updateUser(userId, { password: newPassword });
+      updates.password = 'Alterada'; // Não é necessário mostrar a nova senha por segurança
+    }
+
+    // Retorna os campos que foram atualizados
+    return updates;
+  } catch (error) {
+    console.error('Erro ao alterar dados da conta:', error);
+    throw new Error('Erro ao alterar dados da conta. Tente novamente.');
+  }
+};
+
 
 
 // Função para enviar o link de redefinição de senha
